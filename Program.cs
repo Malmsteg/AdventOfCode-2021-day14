@@ -26,7 +26,7 @@ namespace AdventOfCode_2021_day14
             string str = new(input);
             int count = 0;
 
-            for(;count < 10; count++)
+            for(;count < 5; count++)
             {
                 string next = "";
                 for(int i = 0; i < str.Length;i++)
@@ -61,6 +61,92 @@ namespace AdventOfCode_2021_day14
             }
             Console.WriteLine(result.Values.Max() - result.Values.Min());
             foreach(var item in result)
+            {
+                Console.WriteLine($"{item.Key} equals {item.Value}");
+            }
+
+            // Part 2
+
+            str = new(input);
+            count = 0;
+
+            Dictionary<string, long> result2 = new();
+
+            for(int i = 0; i < str.Length; i++)
+            {
+                if(i != str.Length-1)
+                {
+                    if(!result2.TryAdd("" + str[i] + str[i+1],1))
+                    {
+                        result2["" + str[i] + str[i+1]]++;
+                    }
+                }
+                else
+                {
+                    if(!result2.TryAdd("" + str[i],1))
+                    {
+                        result2["" + str[i] + str[i+1]]++;
+                    }
+                }
+            }
+
+            while(count < 40)
+            {
+                Dictionary<string,long> temp = new();
+                foreach(var item in result2)
+                {
+                    if(polymer.Keys.Contains(item.Key))
+                    {
+                        // for example SV,C -> SC and CV
+                        if(!temp.TryAdd(""+ item.Key[0] + polymer[item.Key], item.Value))
+                        {
+                            temp["" + item.Key[0] + polymer[item.Key]] += item.Value;
+                        }
+                        if(!temp.TryAdd(""+ polymer[item.Key] + item.Key[1], item.Value))
+                        {
+                            temp["" + polymer[item.Key] + item.Key[1]]+= item.Value;
+                        }
+                    }
+                }
+                count++;
+                result2 = new(temp);
+            }
+            Dictionary<char,long> result3 = new();
+            foreach(var item in result2)
+            {
+                if(item.Key.Length == 2)
+                {
+                    if(!result3.TryAdd(item.Key[0],item.Value))
+                    {
+                        result3[item.Key[0]] += item.Value;
+                    }
+                    if(!result3.TryAdd(item.Key[1],item.Value))
+                    {
+                        result3[item.Key[1]] += item.Value;
+                    }
+                }
+                else
+                {
+                    if(!result3.TryAdd(item.Key[0],item.Value))
+                    {
+                        result3[item.Key[0]] += item.Value;
+                    }
+                }
+            }
+            foreach(var item in result3)
+            {
+               if(item.Value % 2 == 0)
+               {
+                   result3[item.Key]/=2;
+               } 
+               else
+               {
+                   result3[item.Key] = (result3[item.Key]/2) +1;
+               }
+            }
+            Console.WriteLine("\n\n\n");
+            Console.WriteLine(result3.Values.Max() - result3.Values.Min());
+            foreach(var item in result3)
             {
                 Console.WriteLine($"{item.Key} equals {item.Value}");
             }
